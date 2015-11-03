@@ -6,8 +6,9 @@ var express = require('express'),
     io = require('socket.io').listen(server),
     url = require('url'),
     redisURL = url.parse(process.env.REDISCLOUD_URL),
-    redis = require('socket.io/node_modules/redis'),
-    sub = redis.createClient(redisURL.port, redisURL.hostname, {return_buffers: true});
+
+    redis = require('redis'),
+    sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
     sub.subscribe('chat');
 
 //port_arg, host_arg, options
