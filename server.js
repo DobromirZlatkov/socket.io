@@ -16,7 +16,7 @@ app.get('/', function (req, res) {
 
 io.sockets.on('connection', function (socket) {
 
-    sub.on('message', function(channel, message){
-        socket.send(message);
-    });
+    // sub.on('message', function(channel, message){
+    //     socket.send(message);
+    // });
 });

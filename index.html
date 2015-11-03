@@ -44,15 +44,15 @@
         <script src="http://localhost:4000/socket.io/socket.io.js"></script>
         <script>
             jQuery(document).ready(function($) {
-                var socket = io.connect('localhost', {port: 4000});
+                var socket = io.connect('https://folded-node-socket.herokuapp.com');
 
                 socket.on('connect', function(){
                     console.log('connected')
                 });
 
-                socket.on('message', function (data) {
-                    console.log(data, 'message received')
-                });
+                // socket.on('message', function (data) {
+                //     console.log(data, 'message received')
+                // });
 
 
             });
