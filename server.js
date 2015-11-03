@@ -25,8 +25,10 @@ var allowCrossDomain = function(req, res, next) {
     }
 };
 
-app.configure(function () {
-    app.use(allowCrossDomain);
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 //port_arg, host_arg, options
 app.get('/', function (req, res) {
