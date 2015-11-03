@@ -5,8 +5,8 @@ var express = require('express'),
     server = http.createServer(app).listen(port),
     io = require('socket.io').listen(server),
     redis = require('socket.io/node_modules/redis');
-    sub = redis.createClient(),
-    sub.subscribe('chat');
+    // sub = redis.createClient(),
+    // sub.subscribe('chat');
 
 
 app.get('/', function (req, res) {
