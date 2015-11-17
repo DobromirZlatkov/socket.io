@@ -8,9 +8,9 @@ var express = require('express'),
     redisURL = url.parse(process.env.REDISCLOUD_URL),
 
     redis = require('redis'),
-    sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
-    sub.subscribe('chat');
 
+    sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
+    sub.subscribe('test_case');
 //TODO handle multiple requests that receive from redis..
 
 var allowCrossDomain = function(req, res, next) {
@@ -37,6 +37,7 @@ io.sockets.on('connection', function (socket) {
     sub.on('message', function(channel, message){
         socket.send(message);
     });
+
 
     socket.on("close", function() {
         console.log("websocket connection close");
