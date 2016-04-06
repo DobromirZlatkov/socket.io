@@ -5,11 +5,20 @@ var express = require('express'),
     server = http.createServer(app).listen(port),
     io = require('socket.io').listen(server),
     url = require('url'),
-    redisURL = url.parse(process.env.REDISCLOUD_URL),
+    redisURL = url.parse(process.env.REDISCLOUD_URL);
 
-    redis = require('redis'),
-    sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
+var redis = require('redis'),
+    // sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
+
+    sub = redis.createClient(redisURL.port,
+                            redisURL.hostname,
+                            {no_ready_check: true});
     sub.subscribe('chat');
+
+    pub = redis.createClient(redisURL.port,
+                            redisURL.hostname,
+                            {no_ready_check: true});
+    pub.subscribe('driver');
 
 //TODO handle multiple requests that receive from redis..
 
@@ -33,9 +42,12 @@ app.get('/', function (req, res) {
 
 
 io.sockets.on('connection', function (socket) {
-
     sub.on('message', function(channel, message){
-        socket.send(message);
+        socket.emit("order", message);
+    });
+
+    pub.on('message', function(channel, message){
+        socket.emit("driver", message);
     });
 
     socket.on("close", function() {
