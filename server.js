@@ -7,50 +7,46 @@ var express = require('express'),
     url = require('url'),
     redisURL = url.parse(process.env.REDISCLOUD_URL);
 
-var redis = require('redis'),
-    // sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
+var redis = require('redis');
 
-    sub = redis.createClient(process.env.REDISCLOUD_URL,
-                            {no_ready_check: true});
-    sub.subscribe('chat');
+var sub = redis.createClient(process.env.REDISCLOUD_URL, {no_ready_check: true});
 
-    pub = redis.createClient(process.env.REDISCLOUD_URL,
-                            {no_ready_check: true});
-    pub.subscribe('driver');
+var sub1 = redis.createClient(process.env.REDISTOGO_URL, {no_ready_check: true});
 
-//TODO handle multiple requests that receive from redis..
+var sub2 = redis.createClient(process.env.REDIS_URL, {no_ready_check: true});
+
+var MultipleRedis = require('multiple-redis');
+
+var multiClient = MultipleRedis.createClient([sub, sub1]);
+
+multiClient.subscribe('order');
+multiClient.subscribe('driver');
 
 
-var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'http://foldedapp.herokuapp.com');
-    // res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-    next();
-};
-// TODO allow only our site access controll origin
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
-app.use(allowCrossDomain);
+
 //port_arg, host_arg, options
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
+app.get('/d3', function (req, res) {
+    res.sendFile(__dirname + '/d3.html');
+});
+app.get('/raw_data.csv', function (req, res) {
+    res.sendFile(__dirname + '/raw_data.csv');
+});
 
 
 io.sockets.on('connection', function (socket) {
-    sub.on('message', function(channel, message){
-        socket.emit("order", message);
-    });
 
-    pub.on('message', function(channel, message){
-        socket.emit("driver", message);
-    });
+    multiClient.on('message', function(channel, message){
+            socket.emit(channel, message);
+        });
 
     socket.on("close", function() {
         console.log("websocket connection close");
     });
 });
+
+var path = require('path');
+var root = path.dirname(require.main.filename);
+console.log(root)

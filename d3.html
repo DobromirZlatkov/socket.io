@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+    <head>
+        <title>D3 tutorial</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
+
+        <style>
+
+            .y-axis .domain {
+                display: none;
+            }
+
+            .y-axis .tick line {
+                fill: none;
+                stroke: cornflowerblue;
+                stroke-width: 2px;
+                opacity: .2;
+            }
+
+            .x-axis .domain {
+                fill: none;
+                stroke: cornflowerblue;
+            }
+
+            .x-axis .tick text {
+                font-size: 12px;
+            }
+        </style>
+
+    </head>
+
+    <body>
+    <div id="figure" style="margin: 50px;"></div>
+
+    <script>
+        var timeout;
+
+        $(window).resize(function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                var $width = $("#figure").width()
+                $('#figure').html('');
+                drawChart($width);
+            }, 250);
+        });
+    </script>
+        <script>
+
+            // var offset = 100000;
+            // var biggesNumber = 665000 + offset;
+            // var smallestNumber = 263000 - offset;
+            // var realData = [
+            //     {
+            //         title:"Value For Address",
+            //         range:[558000, 558000]
+            //     },
+            //     {
+            //         title:"Range For Address",
+            //         range:[465800, 630200]
+            //     },
+            //     {
+            //         title:"Comparables range",
+            //         range:[263000, 665000]
+            //     },
+
+            // ]
+            function drawChart(currWidth) {
+                var offset = 9995000 * 0.1;
+
+                var biggesNumber = 9995000 + offset;
+                var smallestNumber = 15500 - offset;
+
+                  var realData = [
+                    {
+                        title:"Value For Address",
+                        range:[5453000, 5453000]
+                    },
+                    {
+                        title:"Range For Address",
+                        range:[2726500, 8179500]
+                    },
+                    {
+                        title:"Comparables range",
+                        range:[15500, 9995000]
+                    },
+
+                ]
+
+
+                var margin = {top: 80, right: 20, bottom: 80, left: 150},
+                    width = currWidth - margin.left - margin.right,
+                    height = 400 - margin.top - margin.bottom;
+
+                var widthScale = d3.scale.linear()
+                                .domain([smallestNumber, biggesNumber])
+                                .range([0, width]);
+
+                var xScale = d3.scale.linear()
+                                .domain([smallestNumber, biggesNumber])
+                                .range([0, width]);
+
+
+                var axis = d3.svg.axis()
+                            .ticks(5)
+                            .innerTickSize(-height)
+                            .outerTickSize(0)
+                            .tickFormat(function(d) {
+                                return '$' + d3.format(",.0f")(d);
+                            })
+                            .scale(widthScale)
+                            .orient("bottom");
+
+                var yScale = d3.scale.ordinal()
+                        .rangeRoundBands([0, height], 1);
+
+                var yAxis = d3.svg.axis()
+                            .scale(yScale)
+                            .innerTickSize(-width)
+                            .outerTickSize(0)
+                            .tickPadding(10)
+                            .orient("left");
+
+                yScale.domain(realData.map(function(d) { return d.title; }));
+
+
+                var canvas = d3.select('#figure')
+                    .append('svg')
+                    .attr('width', width + margin.left + margin.right)
+                    .attr('height', height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr('transform', "translate(" + margin.left + ", " + margin.top + ")");
+
+                var bars = canvas.selectAll("g")
+                            .data(realData)
+                            .enter()
+                            .append("g");
+
+                var rectBars = bars.append("rect")
+                                .attr({
+                                    width: function(d){
+                                        var width = d.range[1];
+                                        var diff = d.range[0] - smallestNumber;
+                                        return widthScale(width - diff);
+                                    },
+                                    height: function(d){
+                                        return 2;
+                                    },
+                                    fill: function (d) {
+                                        return 'red';
+                                    },
+                                    y: function(d, i) {
+                                        return yScale(d.title);
+                                    },
+                                    x: function(d, i) {
+                                        var x = d.range[0];
+                                        return xScale(x);
+                                    }
+                                });
+
+                // X Axis
+                canvas.append("g")
+                        .attr({
+                            transform: "translate(0, " + height + ")",
+                            class: 'x-axis'
+                        })
+                        .call(axis);
+
+                // Y Axis
+                canvas.append("g")
+                    .attr({
+                        class: 'y-axis',
+
+                    })
+                    .call(yAxis);
+
+                bars.append("text")
+                .attr({
+                    y: function(d, i) {
+                        return yScale(d.title) + 25;
+                    },
+                    x: function(d, i) {
+                        var x = d.range[0];
+                        var length = String(x).length;
+
+                        return xScale(x) - (5 * length);
+                    },
+                    fill: 'green',
+
+                })
+                .text(function(d) {
+                     if (d.range[0] == d.range[1]) {
+                        return '';
+                    } else {
+                        return '$' + d3.format(",.0f")(d.range[0]);
+                    }
+                 });
+
+                bars.append("text")
+                .attr({
+                    y: function(d, i) {
+                        return yScale(d.title) + 25;
+                    },
+                    x: function(d, i) {
+                        var x = d.range[1];
+                        var length = String(x).length;
+                        return xScale(x) - (4 * length);
+                    },
+                    fill: 'green',
+
+                })
+                .text(function(d) {
+                    return '$' + d3.format(",.0f")(d.range[1]);
+                });
+
+                bars.append("circle")
+                .attr({
+                    cy: function(d, i) {
+                        return yScale(d.title) + 1;
+                    },
+                    cx: function(d, i) {
+                        var x = d.range[0];
+                        return xScale(x);
+                    },
+                    fill: 'green',
+                    r: function (d) {
+                       return 5;
+                    }
+                });
+
+                bars.append("circle")
+                .attr({
+                    cy: function(d, i) {
+                        return yScale(d.title) + 1;
+                    },
+                    cx: function(d, i) {
+                        var x = d.range[1];
+                        return xScale(x);
+                    },
+                    fill: 'green',
+                    r: function (d) {
+                       return 5;
+                    }
+                });
+            }
+
+
+
+
+
+        </script>
+    </body>
+</html>

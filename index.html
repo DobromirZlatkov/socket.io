@@ -34,6 +34,15 @@
             <div class="col-md-4" id="third-road-data"></div>
         </div>
 
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn btn-default" id="click-to-test">CLICK TO TEST</div>
+                <a href="http://localhost:8000/o/authorize?response_type=token&client_id=VUZUFAbcj9SN8NIMZpfyPkXQOUu3fiGYQYzLnBLA&redirect_uri=http://localhost:4000">
+                    test 2
+                </a>
+            </div>
+        </div>
+
 
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
@@ -133,5 +142,38 @@
                 });
             });
         </script>
+
+      <!--   <script>
+            var CLIENT_ID = 'VUZUFAbcj9SN8NIMZpfyPkXQOUu3fiGYQYzLnBLA';
+            var AUTHORIZATION_ENDPOINT = "https://soundcloud.com/connect";
+            var RESOURCE_ENDPOINT = "https://api.soundcloud.com/me";
+
+            $('#click-to-test').on('click', function(e){
+                console.log('clicked')
+                $.ajax({
+                    method:'POST',
+                    headers: {
+
+                        'Content-Type':'application/json',
+                        //'Host':'amw2.collateralanalytics.com',
+                        //'Origin':'http://realestatecenter.bankofamerica.com',
+                        'Pragma':'no-cache',
+                        // 'Referer':'http://realestatecenter.bankofamerica.com/tools/marketvalue4.aspx',
+
+                     },
+
+                    url:'http://amw2.collateralanalytics.com/CORS2/api/IValuation',
+                    data:JSON.stringify("{\"UserName\":null,\"Password\":null,\"CompanyId\":1311,\"SecurityToken\":\"67SH2sN4Pwujr3vmmMdPYHVIAkbeoBFkRh2RTh2ptuDk+6xrKfYaoXhTTZcA+XlT4Gr8YYvd0aRqYQAMkQ6Xws4EbwXPGhAtenL0Xu8gueQ=\",\"Address\":\"530 Ruby St, Laguna Beach, CA 92651\",\"AVMCriteria\":{\"FIPS\":\"\",\"State\":\"\",\"City\":\"\",\"ZipList\":[],\"ChartTypes\":[\"1\"],\"PropertyType\":\"RSFR\",\"DataIncrement\":\"Yearly\",\"DataSources\":[\"dq\"],\"YearStart\":\"2000\",\"YearEnd\":\"2013\",\"BedMax\":\"\",\"BedMin\":\"\",\"BathMin\":\"\",\"BathMax\":\"\",\"LivingSqFtMin\":\"\",\"LivingSqFtMax\":\"\",\"YearBuiltMin\":\"\",\"YearBuiltMax\":\"\",\"LandSqFtMin\":\"\",\"LandSqFtMax\":\"\",\"Lenders\":[],\"RadiusMiles\":null,\"ChartWidth\":\"640\",\"ChartHeight\":\"480\",\"PropertyPrice\":\"\"},\"ChartAttributes\":null}"),
+                    success:function(data){
+                        console.log('clicked 2')
+                       // data.setHeader('Access-Control-Allow-Origin','*');
+                        console.log(data);
+                    },
+                    error:function(data){
+                        console.log(data);
+                    }
+                })
+            });
+        </script> -->
     </body>
 </html>
